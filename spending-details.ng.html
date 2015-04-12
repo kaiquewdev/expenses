@@ -1,6 +1,6 @@
 <div class="btn-group pull-right" role="group" aria-label="expenseControls">
   <a href="#details" class="btn btn-default" data-toggle="modal" data-target="#spendingDetails">Detalhes</a>
-  <a href="#details" class="btn btn-danger" ng-click="removeSpending(expense)">Remover</a>
+  <a href="#details" class="btn btn-danger" ng-click="archiveSpending(expense)">Arquivar</a>
 </div>
 
 <div class="modal fade" id="spendingDetails" tabindex="-1" role="dialog" aria-labelledby="spendingDetails" aria-hidden="true">
@@ -12,11 +12,12 @@
       </div>
       <div class="modal-body">
         <ul class="list-group">
-          <li class="list-group-item">R$ {{expense.value}}</li>
-          <li class="list-group-item">{{expense.merchant}}</li>
-          <li class="list-group-item">{{expense.location}}</li>
-          <li class="list-group-item">{{expense.category}}</li>
-          <li class="list-group-item">{{expense.note}}</li>
+          <li class="list-group-item"><img src="http://placehold.it/540x240"></li>
+          <li class="list-group-item" ng-show="expense.value">R$ {{expense.value}}</li>
+          <li class="list-group-item" ng-show="expense.merchant">{{expense.merchant}}</li>
+          <li class="list-group-item" ng-show="expense.location">{{expense.location}}</li>
+          <li class="list-group-item" ng-show="expense.category">{{expense.category}}</li>
+          <li class="list-group-item" ng-show="expense.note">{{expense.note}}</li>
         </ul>
       </div>
       <div class="modal-footer">

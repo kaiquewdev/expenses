@@ -1,16 +1,20 @@
 <div class="panel panel-default" ng-show="spendings.length > 0">
-  <div class="panel-heading">Gastos</div>
+  <div class="panel-heading text-center"><strong>Gastos</strong></div>
   <table class="table" ng-show="spendings.length > 0">
     <thead>
       <tr>
         <th class="text-center">Valor</th>
         <th class="text-center">Comércio</th>
+        <th class="text-center">Categoria</th>
+        <th class="text-center">Local</th>
         <th></th>
       </tr>
     </thead>
-    <tr ng-repeat="expense in spendings">
-      <td class="text-center">{{expense.value | currency:"R$ "}}</td>
-      <td class="text-center">({{expense.merchant}})</td>
+    <tr ng-repeat="expense in spendings | filter: { merchant: currentMerchant, category: currentCategory, location: currentLocation }">
+      <td class="text-center" ng-show="expense.value">{{expense.value | currency:"R$ "}}</td>
+      <td class="text-center"><button type="button" class="btn btn-default" ng-click="setCurrentMerchant(expense.merchant)" ng-show="expense.merchant">{{expense.merchant}}</button></td>
+      <td class="text-center"><button type="button" class="btn btn-default" ng-click="setCurrentCategory(expense.category)" ng-show="expense.category">{{expense.category}}</button></td>
+      <td class="text-center"><button type="button" class="btn btn-default" ng-click="setCurrentLocation(expense.location)" ng-show="expense.location">{{expense.location}}</button></td>
       <td><span spending-details></span></td>
     </tr>
   </table >  
