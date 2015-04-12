@@ -34,6 +34,8 @@ if (Meteor.isClient) {
           updatedAt: Date.now(),
         });
 
+        $scope.expenses = {};
+
         return $scope.spendings;
       };
 
