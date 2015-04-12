@@ -1,9 +1,23 @@
 var Spendings = new Mongo.Collection('spendings');
 
 if (Meteor.isClient) {
-  var expenses = angular.module('expenses', ['angular-meteor']);
+  angular
+    
+    .module('expenses', ['angular-meteor', 'ui.router'])
 
-  expenses
+    .config(['$locationProvider', '$stateProvider', '$urlRouterProvider', function ($locationProvider, $stateProvider, $urlRouterProvider) {
+      $locationProvider.html5Mode(true);
+
+      $stateProvider
+        .state('expenses', {
+          url: '/',
+          templateUrl: 'expenses.ng.html',
+          controller: 'ExpensesCtrl',
+        });
+      
+      $urlRouterProvider.otherwise('/');
+    }])
+
     .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', function ($scope, $meteor, $log) {
       $scope.expenses = {};
       $scope.spendings = $meteor.collection(Spendings).subscribe('spendings');
