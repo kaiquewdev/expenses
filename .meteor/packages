@@ -10,3 +10,5 @@ mongo
 twbs:bootstrap
 angularui:angular-ui-router
 insecure
+mrt:filepicker
+momentjs:moment

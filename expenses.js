@@ -19,20 +19,23 @@ if (Meteor.isClient) {
       $urlRouterProvider.otherwise('/');
     }])
 
-    .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', function ($scope, $meteor, $log) {
+    .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', '$window', function ($scope, $meteor, $log, $window) {
       $scope.expenses = {};
       $scope.spendings = $meteor.collection(function () { 
         return Spendings.find({}, { sort: { createdAt: -1 } }); 
       }).subscribe('spendings');
       $scope.spendingsArchive = $meteor.collection(SpendingsArchive);
+      $scope.current = {};
       $scope.currentMerchant = "";
       $scope.currentCategory = "";
       $scope.currentLocation = "";
+      $scope.currentDate = "";
 
       $scope.addExpense = function (expenses) {
         $log.debug('add expense');
         $scope.spendings.save({
-          value: expenses.value,
+          url: expenses.url,
+          value: expenses.value || 0,
           merchant: expenses.merchant,
           location: expenses.location,
           category: expenses.category,
@@ -46,9 +49,34 @@ if (Meteor.isClient) {
         return $scope.spendings;
       };
 
+      $scope.pickImage = function () {
+        $log.debug('pick image');
+        filepicker.setKey("ALdyR0MhOQPKVT2xHCL9Fz");
+
+        function successHandler(Blob) {
+          $log.debug('success handler');
+          $scope.expenses.url = Blob.url;
+        }
+
+        function failHandler(FPError) {
+          $log.debug('fail handler');
+          $log.debug(FPError);
+        }
+
+        filepicker.pick(
+          {
+            mimetypes: ['image/*'],
+            container: 'window',
+            services: ['COMPUTER', 'DROPBOX', 'GOOGLE_DRIVE', 'SKYDRIVE', 'CLOUDDRIVE', 'WEBCAM'],
+            language: 'pt',
+          }, successHandler, failHandler
+        );
+      };
+
       $scope.archiveSpending = function (spending) {
         $log.debug('archive spending');
         $scope.spendingsArchive.save({
+          url: spending.url,
           value: spending.value,
           merchant: spending.merchant,
           location: spending.location,
@@ -60,25 +88,48 @@ if (Meteor.isClient) {
         $scope.spendings.remove(spending);
       };
 
+      function cleanCurrent () {
+        $log.debug('clean current object');
+        $scope.current = {};
+      }
+      $scope.cleanCurrent = cleanCurrent;
+
       $scope.setCurrentMerchant = function (merchant) {
         $log.debug('set current merchant');
-        $scope.currentMerchant = merchant;
+        cleanCurrent();
+        $scope.current.merchant = merchant;
       };
 
       $scope.setCurrentCategory = function (category) {
         $log.debug('set current category');
-        $scope.currentCategory = category;
+        cleanCurrent();
+        $scope.current.category = category;
       };
 
       $scope.setCurrentLocation = function (location) {
         $log.debug('set current location');
-        $scope.currentLocation = location;
+        cleanCurrent();
+        $scope.current.location = location;
+      };
+
+      $scope.setCurrentDate = function (date) {
+        $log.debug('set current date');
+        cleanCurrent();
+        $scope.current.date = date;
       };
     }])
 
     .directive('listControls', function () {
       return {
+        restrict: 'E',
         templateUrl: 'list-controls.ng.html'
+      };
+    })
+
+    .directive('listStates', function () {
+      return {
+        restrict: 'E',
+        templateUrl: 'list-states.ng.html'
       };
     })
 
@@ -126,6 +177,12 @@ if (Meteor.isClient) {
         out = sum(values);
 
         return out;
+      };
+    })
+
+    .filter('prettyDate', function () {
+      return function (input) {
+        return moment(input).format('DD/MM/YYYY');
       };
     })
     

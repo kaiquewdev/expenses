@@ -1,5 +1,10 @@
 <div class="panel panel-default" ng-show="spendings.length > 0">
   <div class="panel-body text-center">
-    <strong>Total de gastos:</strong> {{spendings | filter: { merchant: currentMerchant, category: currentCategory, location: currentLocation } | totalSpendings | currency: "R$ "}}
+    <h2>
+      Total de gastos: 
+      {{spendings | filter: { merchant: currentMerchant, category: currentCategory, location: currentLocation } | totalSpendings | currency: "R$ "}}
+    </h2>
+    <list-states></list-states>
+    <list-controls></list-controls>
   </div>
 </div>

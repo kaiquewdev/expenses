@@ -1,5 +1,6 @@
-<div class="col-md-12 text-right" ng-show="currentMerchant || (currentCategory || (currentLocation))">
-  <button type="button" class="btn btn-success btn-lg" ng-click="currentMerchant='';currentCategory='';currentLocation=''">
+<div class="col-md-12 text-center" ng-show="current.merchant || (current.category || (current.location || (current.date)))">
+  <hr>
+  <button type="button" class="btn btn-success btn-sm" ng-click="cleanCurrent()">
     Ver tudo
   </button>
 </div>
