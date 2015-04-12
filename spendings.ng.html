@@ -1,0 +1,21 @@
+<div class="panel panel-default" ng-show="spendings.length > 0">
+  <div class="panel-heading">Gastos</div>
+  <table class="table" ng-show="spendings.length > 0">
+    <thead>
+      <tr>
+        <th class="text-center">Valor</th>
+        <th class="text-center">Comércio</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tr ng-repeat="expense in spendings">
+      <td class="text-center">{{expense.value | currency:"R$ "}}</td>
+      <td class="text-center">({{expense.merchant}})</td>
+      <td><span spending-details></span></td>
+    </tr>
+  </table >  
+</div>
+
+<div class="panel panel-default" ng-show="spendings.length === 0">
+  <div class="panel-body text-center">Nenhum gasto registrado no momento.</div>
+</div>

@@ -1,0 +1,27 @@
+<div class="btn-group pull-right" role="group" aria-label="expenseControls">
+  <a href="#details" class="btn btn-default" data-toggle="modal" data-target="#spendingDetails">Detalhes</a>
+  <a href="#details" class="btn btn-danger" ng-click="removeSpending(expense)">Remover</a>
+</div>
+
+<div class="modal fade" id="spendingDetails" tabindex="-1" role="dialog" aria-labelledby="spendingDetails" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="spendingDetailsLabel">Detalhes do gasto</h4>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item">R$ {{expense.value}}</li>
+          <li class="list-group-item">{{expense.merchant}}</li>
+          <li class="list-group-item">{{expense.location}}</li>
+          <li class="list-group-item">{{expense.category}}</li>
+          <li class="list-group-item">{{expense.note}}</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
