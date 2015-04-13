@@ -1,5 +1,6 @@
 var Spendings = new Mongo.Collection('spendings');
 var SpendingsArchive = new Mongo.Collection('spendingsArchive');
+var Merchants = new Mongo.Collection('merchants');
 
 if (Meteor.isClient) {
   angular
@@ -26,6 +27,9 @@ if (Meteor.isClient) {
       $scope.spendings = $meteor.collection(function () { 
         return Spendings.find({}, { sort: { createdAt: -1 } }); 
       }).subscribe('spendings');
+      $scope.merchants = $meteor.collection(function () {
+        return Merchants.find({}, { sort: { rank: -1 } });
+      }).subscribe('merchants');
       $scope.spendingsArchive = $meteor.collection(SpendingsArchive);
       $scope.current = {};
 
@@ -240,7 +244,69 @@ if (Meteor.isClient) {
 }
 
 if (Meteor.isServer) {
+  Meteor.startup(function () {
+    var merchants = [
+        'RESTAURANTE',
+        'QUIOSQUE',
+        'DEPÓSITO',
+        'TRANSFERÊNCIA',
+        'FARMÁCIA',
+        'MERCADO',
+        'PADARIA',
+        'MERCEARIA',
+        'DOCERIA',
+        'BAR',
+        'PASTELARIA',
+        'LANCHONETE',
+        'LAVANDERIA',
+        'POSTO DE GASOLINA',
+        'ÁGUA',
+        'LUZ',
+        'TELEFONE',
+        'INTERNET',
+        'GÁS',
+        'BALADA',
+        'CASAS DE SHOW',
+        'CLUBE',
+        'ACADEMIA',
+        'YOGA',
+        'CONSULTÓRIO MÉDICO',
+        'CONSULTÓRIO DENTÁRIO',
+        'CABELEIREIRO',
+        'VETERINÁRIA',
+        'OFICINA MECÂNICA',
+        'BORRACHEIRO',
+        'CINEMA',
+        'TEATRO',
+        'PAPELARIA',
+        'ARTESANATO', 
+        'BAZAR',
+        'AGÊNCIA DE TURISMO',
+        'HOSTEL',
+        'HOTEL',
+        'CAMPING',
+        'MATERIAL DE CONSTRUÇÃO',
+        'OUTRO',
+    ]; 
+
+    if (Merchants.find().count() === 0) {
+        merchants.map(function (item) {
+            var merchant = {
+                value: item.toLowerCase(),
+                label: item.toLowerCase(),
+                rank: 0
+            };
+
+            Merchants.insert(merchant);
+        });
+    }
+  });
+
   Meteor.publish('spendings', function () {
     return Spendings.find({}, { sort: { createdAt: -1 } });
+  });
+
+  Meteor.publish('merchants', function () {
+    return Merchants.find({}, { sort: { rank: -1 } });
   });
 }
