@@ -13,7 +13,7 @@
         <th></th>
       </tr>
     </thead>
-    <tr ng-repeat="expense in spendings | filter: { merchant: currentMerchant, category: currentCategory, location: currentLocation }">
+    <tr ng-repeat="expense in spendings | filter: { merchant: current.merchant, category: current.category, location: current.location, createdAt: current.date } ">
       <td class="text-center" ng-show="expense.value">{{expense.value | currency:"R$ "}}</td>
       <td class="text-center"><button type="button" class="btn btn-default" ng-click="setCurrentMerchant(expense.merchant)" ng-show="expense.merchant">{{expense.merchant}}</button></td>
       <td class="text-center"><button type="button" class="btn btn-default" ng-click="setCurrentCategory(expense.category)" ng-show="expense.category">{{expense.category}}</button></td>
@@ -23,10 +23,10 @@
     </tr>
   </table>  
   <div class="panel-footer text-right" ng-show="spendings.length === 1">
-    Total de <span class="badge">{{spendings.length}}</span> gasto registrado 
+    Total de <span class="badge">{{spendings | filter: { merchant: current.merchant, category: current.category, location: current.location, createdAt: current.date } | len}}</span> gasto registrado 
   </div>
   <div class="panel-footer text-right" ng-show="spendings.length > 1">
-    Total de <span class="badge">{{spendings.length}}</span> gastos registrados
+    Total de <span class="badge">{{spendings | filter: { merchant: current.merchant, category: current.category, location: current.location, createdAt: current.date } | len}}</span> gastos registrados
   </div>
 </div>
 

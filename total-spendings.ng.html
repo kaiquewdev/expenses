@@ -2,7 +2,7 @@
   <div class="panel-body text-center">
     <h2>
       Total de gastos: 
-      {{spendings | filter: { merchant: currentMerchant, category: currentCategory, location: currentLocation } | totalSpendings | currency: "R$ "}}
+      {{spendings | filter:{merchant:current.merchant,category:current.category,location:current.location,createdAt:current.createdAt} | totalSpendings | currency: "R$ "}}
     </h2>
     <list-states></list-states>
     <list-controls></list-controls>

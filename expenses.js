@@ -19,20 +19,33 @@ if (Meteor.isClient) {
       $urlRouterProvider.otherwise('/');
     }])
 
-    .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', '$window', function ($scope, $meteor, $log, $window) {
-      $scope.expenses = {};
+    .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', '$window', 'Expense', function ($scope, $meteor, $log, $window, Expense) {
+      $scope.expenses = {
+        location: $window.localStorage.getItem('lastLocation'),
+      };
       $scope.spendings = $meteor.collection(function () { 
         return Spendings.find({}, { sort: { createdAt: -1 } }); 
       }).subscribe('spendings');
       $scope.spendingsArchive = $meteor.collection(SpendingsArchive);
       $scope.current = {};
-      $scope.currentMerchant = "";
-      $scope.currentCategory = "";
-      $scope.currentLocation = "";
-      $scope.currentDate = "";
 
-      $scope.addExpense = function (expenses) {
-        $log.debug('add expense');
+      $scope.addExpense = Expense.add.bind($scope);
+      $scope.pickImage = Expense.pickImage.bind($scope);
+      $scope.archiveSpending = Expense.archive.bind($scope);
+      $scope.cleanCurrent = Expense.cleanCurrent.bind($scope);
+      $scope.setCurrentMerchant = Expense.setCurrent.merchant.bind($scope);
+      $scope.setCurrentCategory = Expense.setCurrent.category.bind($scope);
+      $scope.setCurrentLocation = Expense.setCurrent.location.bind($scope);
+      $scope.setCurrentDate = Expense.setCurrent.date.bind($scope);
+    }])
+
+    .value('filePickerApiKey', 'ALdyR0MhOQPKVT2xHCL9Fz')
+
+    .factory('add', function ($log, $window) {
+      return function (expenses) {
+        $log.debug('addExpense');
+        var $scope = this;
+        $window.localStorage.setItem('lastLocation', expenses.location);
         $scope.spendings.save({
           url: expenses.url,
           value: expenses.value || 0,
@@ -48,10 +61,13 @@ if (Meteor.isClient) {
 
         return $scope.spendings;
       };
+    })
 
-      $scope.pickImage = function () {
+    .factory('pickImage', function ($log, filePickerApiKey) {
+      return function () {
         $log.debug('pick image');
-        filepicker.setKey("ALdyR0MhOQPKVT2xHCL9Fz");
+        var $scope = this;
+        filepicker.setKey(filePickerApiKey);
 
         function successHandler(Blob) {
           $log.debug('success handler');
@@ -72,9 +88,12 @@ if (Meteor.isClient) {
           }, successHandler, failHandler
         );
       };
+    })
 
-      $scope.archiveSpending = function (spending) {
-        $log.debug('archive spending');
+    .factory('archive', function ($log) {
+      return function (spending) {
+        $log.debug('archive');
+        var $scope = this;
         $scope.spendingsArchive.save({
           url: spending.url,
           value: spending.value,
@@ -87,37 +106,60 @@ if (Meteor.isClient) {
         });
         $scope.spendings.remove(spending);
       };
+    })
 
-      function cleanCurrent () {
-        $log.debug('clean current object');
+    .factory('cleanCurrent', function ($log) {
+      return function () {
+        $log.debug('cleanCurrent');
+        var $scope = this;
         $scope.current = {};
-      }
-      $scope.cleanCurrent = cleanCurrent;
+      };
+    })
 
-      $scope.setCurrentMerchant = function (merchant) {
-        $log.debug('set current merchant');
-        cleanCurrent();
+    .factory('setCurrent', function ($log, cleanCurrent) {
+      var factory = {};
+
+      factory.merchant = function (merchant) {
+        $log.debug('setCurrent merchant');
+        var $scope = this;
+        cleanCurrent.call($scope);
         $scope.current.merchant = merchant;
       };
 
-      $scope.setCurrentCategory = function (category) {
-        $log.debug('set current category');
-        cleanCurrent();
+      factory.category = function (category) {
+        $log.debug('setCurrent category');
+        var $scope = this;
+        cleanCurrent.call($scope);
         $scope.current.category = category;
       };
-
-      $scope.setCurrentLocation = function (location) {
-        $log.debug('set current location');
-        cleanCurrent();
+    
+      factory.location = function (location) {
+        $log.debug('setCurrent location');
+        var $scope = this;
+        cleanCurrent.call($scope);
         $scope.current.location = location;
       };
 
-      $scope.setCurrentDate = function (date) {
-        $log.debug('set current date');
-        cleanCurrent();
+
+      factory.date = function (date) {
+        $log.debug('setCurrent date');
+        var $scope = this;
+        cleanCurrent.call($scope);
         $scope.current.date = date;
       };
-    }])
+
+      return factory;
+    })
+
+    .factory('Expense', function (add, archive, pickImage, cleanCurrent, setCurrent) {
+      return {
+        add: add,
+        archive: archive,
+        pickImage: pickImage,
+        cleanCurrent: cleanCurrent,
+        setCurrent: setCurrent,
+      };
+    })
 
     .directive('listControls', function () {
       return {
@@ -183,6 +225,12 @@ if (Meteor.isClient) {
     .filter('prettyDate', function () {
       return function (input) {
         return moment(input).format('DD/MM/YYYY');
+      };
+    })
+
+    .filter('len', function () {
+      return function (input) {
+        return input.length;
       };
     })
     
