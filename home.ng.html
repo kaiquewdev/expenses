@@ -1,0 +1,16 @@
+<div>
+  <div class="container">
+    <div class="jumbotron" style="margin-top:70px;">
+      <h1>Investimim</h1>
+      <p>Controle financeiro</p>
+      <meteor-include src="loginButtons"></meteor-include>
+      <hr ng-show="$root.currentUser">
+      <div class="col-md-12 text-center" ng-show="$root.currentUser">
+        <a href='/expenses' class="btn btn-primary btn-lg" >
+          Começar a usar
+        </a>
+      </div>
+      <br>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,47 @@
 var Spendings = new Mongo.Collection('spendings');
+
+Spendings.allow({
+  insert: function (userId, spending) {
+    return userId && spending.createdBy === userId;
+  },
+  update: function (userId, spending) {
+    if (userId !== spending.createdBy) {
+      return false;
+    }
+
+    return true;
+  },
+  remove: function (userId, spending) {
+    if (userId !== spending.createdBy) {
+      return false;
+    }
+
+    return true;
+  },
+});
+
 var SpendingsArchive = new Mongo.Collection('spendingsArchive');
+
+SpendingsArchive.allow({
+  insert: function (userId, spending) {
+    return userId && spending.createdBy === userId;
+  },
+  update: function (userId, spending) {
+    if (userId !== spending.createdBy) {
+      return false;
+    }
+
+    return true;
+  },
+  remove: function (userId, spending) {
+    if (userId !== spending.createdBy) {
+      return false;
+    }
+
+    return true;
+  },
+});
+
 var Merchants = new Mongo.Collection('merchants');
 
 if (Meteor.isClient) {
@@ -11,26 +53,38 @@ if (Meteor.isClient) {
       $locationProvider.html5Mode(true);
 
       $stateProvider
-        .state('expenses', {
+        .state('home', {
           url: '/',
+          templateUrl: 'home.ng.html',
+          controller: 'HomeCtrl'
+        })
+        .state('expenses', {
+          url: '/expenses',
           templateUrl: 'expenses.ng.html',
           controller: 'ExpensesCtrl',
+          resolve: {
+            currentUser: ['$meteor', function ($meteor) {
+              return $meteor.requireUser();
+            }]
+          }
         });
       
       $urlRouterProvider.otherwise('/');
     }])
 
-    .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', '$window', 'Expense', function ($scope, $meteor, $log, $window, Expense) {
+    .controller('HomeCtrl', ['$log', function ($log) {
+      $log.debug('Home controller');
+    }])
+
+    .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', '$window', 'Expense', 'btnPickImageLabel', function ($scope, $meteor, $log, $window, Expense, btnPickImageLabel) {
+      $log.debug('Expenses controller');
       $scope.expenses = {
         location: $window.localStorage.getItem('lastLocation'),
       };
-      $scope.spendings = $meteor.collection(function () { 
-        return Spendings.find({}, { sort: { createdAt: -1 } }); 
-      }).subscribe('spendings');
-      $scope.merchants = $meteor.collection(function () {
-        return Merchants.find({}, { sort: { rank: -1 } });
-      }).subscribe('merchants');
+      $scope.spendings = $meteor.collection(Spendings).subscribe('spendings');
+      $scope.merchants = $meteor.collection(Merchants).subscribe('merchants');
       $scope.spendingsArchive = $meteor.collection(SpendingsArchive);
+      $scope.btnPickImageLabel = btnPickImageLabel;
       $scope.current = {};
 
       $scope.addExpense = Expense.add.bind($scope);
@@ -44,8 +98,10 @@ if (Meteor.isClient) {
     }])
 
     .value('filePickerApiKey', 'ALdyR0MhOQPKVT2xHCL9Fz')
+    .value('btnPickImageLabel', 'Inserir uma imagem')
+    .value('btnPickImageLoadingLabel', 'Carregando...')
 
-    .factory('add', function ($log, $window) {
+    .factory('add', function ($log, $window, $rootScope) {
       return function (expenses) {
         $log.debug('addExpense');
         var $scope = this;
@@ -57,9 +113,10 @@ if (Meteor.isClient) {
           location: expenses.location,
           category: expenses.category,
           note: expenses.note,
+          createdBy: $rootScope.currentUser._id,
           createdAt: Date.now(),
           updatedAt: Date.now(),
-        });
+        }, $log.debug);
 
         $scope.expenses = {};
 
@@ -67,20 +124,26 @@ if (Meteor.isClient) {
       };
     })
 
-    .factory('pickImage', function ($log, filePickerApiKey) {
+    .factory('pickImage', function ($log, filePickerApiKey, btnPickImageLabel, btnPickImageLoadingLabel) {
       return function () {
         $log.debug('pick image');
         var $scope = this;
         filepicker.setKey(filePickerApiKey);
 
+        $scope.btnPickImageLabel = btnPickImageLoadingLabel;
+
         function successHandler(Blob) {
           $log.debug('success handler');
           $scope.expenses.url = Blob.url;
+          $scope.btnPickImageLabel = btnPickImageLabel;
+          $scope.$digest();
         }
 
         function failHandler(FPError) {
           $log.debug('fail handler');
           $log.debug(FPError);
+          $scope.btnPickImageLabel = btnPickImageLabel;
+          $scope.$digest();
         }
 
         filepicker.pick(
@@ -203,6 +266,12 @@ if (Meteor.isClient) {
       };
     })
 
+    .directive('hasLogin', function () {
+      return {
+        templateUrl: 'has-login.ng.html'
+      };
+    })
+
     .filter('totalSpendings', function () {
       return function (input) {
         var out = 0;
@@ -238,8 +307,15 @@ if (Meteor.isClient) {
       };
     })
     
-    .run(function ($log) {
+    .run(function ($log, $rootScope, $state) {
       $log.debug('running expenses module!');
+      $rootScope.$on('$stateChangeError', function (event, toState, toParams, fromState, fromParams, err) {
+        $log.debug('$stateChangeeError');
+        if (err === 'AUTH_REQUIRED') {
+          $log.debug(err);
+          $state.go('home');
+        }
+      });
     });
 }
 
@@ -303,10 +379,10 @@ if (Meteor.isServer) {
   });
 
   Meteor.publish('spendings', function () {
-    return Spendings.find({}, { sort: { createdAt: -1 } });
+    return Spendings.find({ $and: [{ createdBy: this.userId }, { createdBy: { $exists: true } }] }, { sort: { createdAt: -1 } });
   });
 
   Meteor.publish('merchants', function () {
-    return Merchants.find({}, { sort: { rank: -1 } });
+    return Merchants.find({ $and: [{ createdBy: this.userId }, { createdBy: { $exists: true } }] }, { sort: { rank: -1 } });
   });
 }

@@ -9,6 +9,7 @@ urigo:angular
 mongo
 twbs:bootstrap
 angularui:angular-ui-router
-insecure
 mrt:filepicker
 momentjs:moment
+accounts-password
+accounts-ui

@@ -15,17 +15,18 @@
         <form>
           <div class="form-group">
             <div class="text-center">
-              <button type="button" class="btn btn-info btn-lg" ng-click="pickImage()" ng-hide="expenses.url">Inserir uma imagem</button>
+              <button type="button" class="btn btn-info btn-lg" ng-click="pickImage()" ng-hide="expenses.url">{{btnPickImageLabel}}</button>
               <img src="{{expenses.url}}" ng-show="expenses.url" width="540" height="240" />
             </div>
           </div>
 
           <div class="form-group">
-            <input class="form-control" type="number" placeholder="Valor da despeza em R$" ng-model="expenses.value" required />
+            <input class="form-control" type="number" placeholder="Valor" ng-model="expenses.value" required />
           </div>
 
           <div class="form-group">
-            <select class="form-control" ng-model="expenses.merchant">
+            <select class="form-control" ng-model="expenses.merchant" placeholder="Comércio">
+                <option value="">Comércio</option>
                 <option ng-repeat="item in merchants" value="{{item.value}}">{{item.label}}</option>
             </select>
           </div>
