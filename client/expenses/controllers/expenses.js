@@ -5,7 +5,9 @@ angular
       $scope.expenses = {
         location: $window.localStorage.getItem('lastLocation'),
       };
-      $scope.spendings = $meteor.collection(Spendings).subscribe('spendings');
+      $scope.spendings = $meteor.collection(function () {
+        return Spendings.find({}, { sort: { createdAt: -1 } });
+      }).subscribe('spendings');
       $scope.merchants = $meteor.collection(Merchants).subscribe('merchants');
       $scope.spendingsArchive = $meteor.collection(SpendingsArchive);
       $scope.btnPickImageLabel = btnPickImageLabel;

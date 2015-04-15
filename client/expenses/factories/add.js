@@ -11,6 +11,7 @@ angular
           merchant: expenses.merchant,
           location: expenses.location,
           category: expenses.category,
+          tags: expenses.tags,
           note: expenses.note,
           createdBy: $rootScope.currentUser._id,
           createdAt: Date.now(),

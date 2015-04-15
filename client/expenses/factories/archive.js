@@ -15,5 +15,6 @@ angular
           updatedAt: Date.now()
         });
         $scope.spendings.remove(spending);
+        angular.element('.modal-backdrop').hide();
       };
     });

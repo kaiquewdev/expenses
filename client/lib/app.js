@@ -1,5 +1,5 @@
 angular
-    .module('expenses', ['angular-meteor', 'ui.router']);
+    .module('expenses', ['angular-meteor', 'ui.router', 'ngTagsInput']);
 
 function onReady() {
   angular.bootstrap(document, ['expenses']);

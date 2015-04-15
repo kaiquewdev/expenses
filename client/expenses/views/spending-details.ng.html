@@ -1,7 +1,4 @@
-<div class="btn-group pull-right" role="group" aria-label="expenseControls">
-  <a href="#details" class="btn btn-default" data-toggle="modal" data-target="#spendingDetails">Detalhes</a>
-  <a href="#details" class="btn btn-danger" ng-click="archiveSpending(expense)">Arquivar</a>
-</div>
+<a href="#details" class="btn btn-default" data-toggle="modal" data-target="#spendingDetails">Detalhes</a>
 
 <div class="modal fade" id="spendingDetails" tabindex="-1" role="dialog" aria-labelledby="spendingDetails" aria-hidden="true">
   <div class="modal-dialog">
@@ -17,11 +14,15 @@
           <li class="list-group-item" ng-show="expense.merchant" ng-hide="!expense.merchant">{{expense.merchant}}</li>
           <li class="list-group-item" ng-show="expense.location" ng-hide="!expense.location">{{expense.location}}</li>
           <li class="list-group-item" ng-show="expense.category" ng-hide="!expense.category">{{expense.category}}</li>
+          <li class="list-group-item list-tags-item" ng-show="expense.tags.length" ng-hide="!expense.tags.length">
+            <p><span class="badge badge-warning" ng-repeat="tag in expense.tags">{{tag.text}}</span></p>
+          </li>
           <li class="list-group-item" ng-show="expense.note" ng-hide="!expense.note">{{expense.note}}</li>
         </ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+        <span spending-archive></span>
       </div>
     </div>
   </div>
