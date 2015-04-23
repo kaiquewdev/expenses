@@ -18,7 +18,7 @@
                                 <h4 class="modal-title" id="addSpendingsLabel">Gasto</h4>
                               </div>
                               <div class="modal-body">
-                                <form>
+                                <form name="expenseForm">
                                   <div class="form-group">
                                     <div class="text-center">
                                       <button type="button" class="btn btn-info btn-lg" ng-click="pickImage()" ng-hide="expenses.url">{{btnPickImageLabel}}</button>
@@ -27,26 +27,30 @@
                                   </div>
 
                                   <div class="form-group">
-                                    <input class="form-control" type="number" placeholder="Valor" ng-model="expenses.value" required />
+                                      <input class="form-control" name="value" type="number" placeholder="Valor" ng-model="expenses.value" ng-model-options="{ debounce: 500 }" required />
+                                      <p class="alert alert-danger margin-alert" ng-show="(expenseForm.$submitted || (expenseForm.value.$touched)) && expenseForm.value.$error.required">O valor deve ser preenchido</p>
                                   </div>
 
                                   <div class="form-group">
-                                    <select class="form-control" ng-model="expenses.merchant" placeholder="Comércio">
+                                      <select class="form-control" name="merchant" ng-model="expenses.merchant" ng-model-options="{ debounce: 500 }" placeholder="Comércio" required>
                                         <option value="">Comércio</option>
                                         <option ng-repeat="item in merchants" value="{{item.value}}">{{item.label}}</option>
                                     </select>
+                                    <p class="alert alert-danger margin-alert" ng-show="(expenseForm.$submitted || (expenseForm.merchant.$touched)) && expenseForm.merchant.$error.required">O comércio deve ser preenchido</p>
                                   </div>
 
                                   <div class="form-group">
-                                    <input class="form-control" type="text" placeholder="Local" ng-model="expenses.location" required />
+                                      <input class="form-control" name="location" type="text" placeholder="Local" ng-model="expenses.location" ng-model-options="{ debounce: 500 }" required />
+                                    <p class="alert alert-danger margin-alert" ng-show="(expenseForm.$submitted || (expenseForm.location.$touched)) && expenseForm.location.$error.required">O local deve ser preenchido</p>
                                   </div>
 
                                   <div class="form-group">
-                                    <input class="form-control" type="text" placeholder="Categoria" ng-model="expenses.category" required />
+                                      <input class="form-control" name="category" type="text" placeholder="Categoria" ng-model="expenses.category" ng-model-options="{ debounce: 500 }" required />
+                                    <p class="alert alert-danger margin-alert" ng-show="(expenseForm.$submitted || (expenseForm.category.$touched)) && expenseForm.category.$error.required">A categoria deve ser preenchido</p>
                                   </div>
 
                                   <div class="form-group">
-                                    <tags-input type="text" placeholder="Tags" ng-model="expenses.tags" required></tags-input>
+                                    <tags-input type="text" name="tags" placeholder="Tags" ng-model="expenses.tags" ></tags-input>
                                   </div>
 
                                   <div class="form-group">
@@ -56,7 +60,7 @@
                               </div>
                               <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
-                                <button class="btn btn-primary" type="submit" data-dismiss="modal" ng-click="addExpense(expenses)">Adicionar</button>
+                                <button class="btn btn-primary" type="submit" data-dismiss="modal" ng-click="addExpense(expenses)" ng-show="expenseForm.$valid">Adicionar</button>
                               </div>
                             </div>
                           </div>

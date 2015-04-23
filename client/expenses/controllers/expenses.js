@@ -2,9 +2,11 @@ angular
     .module('expenses')
     .controller('ExpensesCtrl', ['$scope', '$meteor', '$log', '$window', 'Expense', 'btnPickImageLabel', function ($scope, $meteor, $log, $window, Expense, btnPickImageLabel) {
       $log.debug('Expenses controller');
-      $scope.expenses = {
-        location: $window.localStorage.getItem('lastLocation'),
-      };
+      var location = $window.localStorage.getItem('lastLocation');
+      $scope.expenses = {};
+      if (location !== 'null') {
+          $scope.expenses.location = location;
+      }
       $scope.spendings = $meteor.collection(function () {
         return Spendings.find({}, { sort: { createdAt: -1 } });
       }).subscribe('spendings');
